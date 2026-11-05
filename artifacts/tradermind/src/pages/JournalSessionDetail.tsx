@@ -496,7 +496,7 @@ export default function JournalSessionDetail() {
   const optionLabel = (optionId: string | null | undefined, fallback: string) =>
     bundleOptions.find(option => option.id === optionId)?.label ?? fallback;
 
-  return <main dir="rtl" className="tradermind-page-shell mx-auto w-full max-w-6xl space-y-5 p-4 pb-14 md:p-8" data-testid="page-journal-session-detail">
+  return <main dir="rtl" className="tradermind-page-shell mx-auto min-w-0 w-full max-w-6xl space-y-5 p-4 pb-14 [overflow-wrap:anywhere] md:p-8" data-testid="page-journal-session-detail">
     <div className="flex flex-wrap items-center justify-between gap-3">
       <Button variant="ghost" className="gap-2 px-2 text-muted-foreground" onClick={() => setLocation(sessionListReturnTo)} data-testid="button-back-sessions"><ArrowRight className="h-4 w-4" />بازگشت به سشن‌ها</Button>
       <Button className="gap-2" onClick={scrollToTrigger} data-testid="button-start-session-trade"><Plus className="h-4 w-4" />ثبت معامله در این سشن</Button>
@@ -506,21 +506,21 @@ export default function JournalSessionDetail() {
       <div className="h-1 bg-gradient-to-l from-primary via-primary/45 to-transparent" />
       <CardContent className="p-5 md:p-7">
         <div className="flex flex-col justify-between gap-5 md:flex-row md:items-start">
-          <div className="space-y-3">
+          <div className="min-w-0 space-y-3">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant={bundle.session.status === 'active' ? 'default' : 'secondary'} data-testid="status-session-detail">{statusName(bundle.session.status)}</Badge>
               {sessionType && <Badge variant="outline" data-testid="text-session-type">{sessionType}</Badge>}
               {marketName && <Badge variant="outline" data-testid="text-session-market">{marketName}</Badge>}
               {parseJournalArray(bundle.session.tags).map((tag, index) => <Badge key={`${tag}-${index}`} variant="outline" className="text-muted-foreground">{tag}</Badge>)}
             </div>
-            <div><h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{parseJournalArray(bundle.session.symbols).join(' / ') || 'سشن بدون نماد'}</h1>
-              <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
+            <div className="min-w-0"><h1 className="break-words text-2xl font-bold tracking-tight sm:text-3xl">{parseJournalArray(bundle.session.symbols).join(' / ') || 'سشن بدون نماد'}</h1>
+              <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 break-words text-sm text-muted-foreground">
                 <span data-testid="text-session-account">{accountName}</span><span>·</span><span data-testid="text-session-box">{box?.name ?? 'باکس در دسترس نیست'}</span><span>·</span><span data-testid="text-session-strategy">{bundle.strategyVersion?.strategyName ?? bundle.strategy?.name ?? 'استراتژی در دسترس نیست'}</span>
                 {bundle.strategyVersion && <span className="font-mono text-[11px]">نسخه {bundle.strategyVersion.versionNumber}</span>}
               </p>
             </div>
           </div>
-          <div className="flex shrink-0 items-center gap-2 rounded-xl border border-border/70 bg-muted/30 px-4 py-3 text-sm">
+          <div className="flex min-w-0 shrink-0 items-center gap-2 rounded-xl border border-border/70 bg-muted/30 px-4 py-3 text-sm md:max-w-[45%]">
             <CalendarClock className="h-4 w-4 text-primary" />
             {(() => {
               const moment = describeSessionMoment(bundle.session.startTime);
@@ -565,7 +565,7 @@ export default function JournalSessionDetail() {
     </Card>
 
     <section className="space-y-3" aria-labelledby="session-timeline-heading">
-      <div className="flex items-end justify-between gap-3"><div><p className="text-[10px] font-medium tracking-[0.18em] text-primary">SESSION HISTORY</p><h2 id="session-timeline-heading" className="mt-1 text-xl font-semibold">خط زمانی سشن</h2></div><span className="text-xs text-muted-foreground">{timelineItems.length} رویداد</span></div>
+      <div className="flex flex-wrap items-end justify-between gap-3"><div className="min-w-0"><p className="text-[10px] font-medium tracking-[0.18em] text-primary">SESSION HISTORY</p><h2 id="session-timeline-heading" className="mt-1 text-xl font-semibold">خط زمانی سشن</h2></div><span className="max-w-full text-xs text-muted-foreground">{timelineItems.length} رویداد</span></div>
       {timelineItems.length === 0 ? <Card className="border-dashed"><CardContent className="p-5 text-sm text-muted-foreground" data-testid="empty-session-timeline">هنوز رویدادی برای نمایش وجود ندارد.</CardContent></Card> : <Card className="tradermind-card overflow-hidden">
         <div className="divide-y divide-border/70">
           {timelineItems.map(item => {
@@ -618,7 +618,7 @@ export default function JournalSessionDetail() {
                     </div>}
                   </div>
                 )}
-                {details && <p className="mt-1 whitespace-pre-wrap text-xs leading-5 text-muted-foreground">{details}</p>}
+                {details && <p className="mt-1 break-words whitespace-pre-wrap text-xs leading-5 text-muted-foreground">{details}</p>}
               </div>
             </div>;
           })}
@@ -627,7 +627,7 @@ export default function JournalSessionDetail() {
     </section>
 
     <section className="space-y-3" aria-labelledby="analysis-heading">
-      <div className="flex items-end justify-between gap-3"><div><p className="text-[10px] font-medium tracking-[0.18em] text-primary">MARKET CONTEXT</p><h2 id="analysis-heading" className="mt-1 text-xl font-semibold">رویدادهای تحلیل چندبازه‌ای</h2></div><span className="text-xs text-muted-foreground">{analyses.length} رویداد تحلیل</span></div>
+      <div className="flex flex-wrap items-end justify-between gap-3"><div className="min-w-0"><p className="text-[10px] font-medium tracking-[0.18em] text-primary">MARKET CONTEXT</p><h2 id="analysis-heading" className="mt-1 text-xl font-semibold">رویدادهای تحلیل چندبازه‌ای</h2></div><span className="max-w-full text-xs text-muted-foreground">{analyses.length} رویداد تحلیل</span></div>
       {timeframes.length === 0 ? <Card className="border-dashed"><CardContent className="p-5 text-sm text-muted-foreground" data-testid="empty-enabled-timeframes">تایم‌فریم فعالی برای تحلیل وجود ندارد. گزینه‌های غیرفعال عمداً قابل انتخاب نیستند.</CardContent></Card> : (
         <Card className="tradermind-card">
           <CardContent className="space-y-3 p-4">
@@ -675,8 +675,8 @@ export default function JournalSessionDetail() {
               />;
             };
             return <Card key={analysis.id} className="tradermind-card overflow-hidden" data-testid={`card-analysis-${analysis.id}`}>
-              <div className="flex items-center justify-between border-b border-border/70 bg-muted/20 px-4 py-3">
-                <div className="flex items-center gap-2"><span className="font-mono text-xs text-primary">{String(index + 1).padStart(2, '0')}</span><h3 className="font-semibold">{optionLabel(analysis.timeframeOptionId, 'تایم‌فریم حذف‌شده')}</h3><Badge variant="outline" className="text-[10px]">رویداد مستقل</Badge>
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/70 bg-muted/20 px-4 py-3">
+                <div className="flex min-w-0 flex-wrap items-center gap-2"><span className="font-mono text-xs text-primary">{String(index + 1).padStart(2, '0')}</span><h3 className="font-semibold">{optionLabel(analysis.timeframeOptionId, 'تایم‌فریم حذف‌شده')}</h3><Badge variant="outline" className="text-[10px]">رویداد مستقل</Badge>
                   {analysis.scenarioOutcomeOptionId && <span className={`rounded-full border px-2 py-0.5 text-[10px] ${SCENARIO_OUTCOME_TONE[classifyScenarioOutcome(optionLabel(analysis.scenarioOutcomeOptionId, ''))]}`} data-testid={`badge-scenario-outcome-${analysis.id}`}>{optionLabel(analysis.scenarioOutcomeOptionId, 'نتیجه')}</span>}</div>
                 <span className="text-[10px] text-muted-foreground">{localDate(analysis.createdAt)}</span>
               </div>
@@ -732,7 +732,7 @@ export default function JournalSessionDetail() {
     </section>
 
     <section id="journal-trigger-capture" className="space-y-3" aria-labelledby="trigger-heading">
-      <div className="flex items-end justify-between gap-3"><div><p className="text-[10px] font-medium tracking-[0.18em] text-primary">EXECUTION TRIGGER</p><h2 id="trigger-heading" className="mt-1 text-xl font-semibold">تریگر و ثبت معامله</h2></div><Badge variant="outline" data-testid="text-trigger-count">{triggers.length} تریگر · {triggers.filter(item => item.status === 'ignored').length} نادیده · {triggers.filter(item => item.status === 'invalid').length} نامعتبر</Badge></div>
+      <div className="flex flex-wrap items-end justify-between gap-3"><div className="min-w-0"><p className="text-[10px] font-medium tracking-[0.18em] text-primary">EXECUTION TRIGGER</p><h2 id="trigger-heading" className="mt-1 text-xl font-semibold">تریگر و ثبت معامله</h2></div><Badge variant="outline" className="max-w-full whitespace-normal text-right" data-testid="text-trigger-count">{triggers.length} تریگر · {triggers.filter(item => item.status === 'ignored').length} نادیده · {triggers.filter(item => item.status === 'invalid').length} نامعتبر</Badge></div>
       <Card className="tradermind-card" data-testid="card-trigger-capture">
         <CardContent className="space-y-4 p-4">
           <p className="text-sm leading-6 text-muted-foreground">تریگر 1M را پیش از ورود ثبت کنید. در صورت تأیید، ادامه به فرم اجرا، ارتباط تریگر و تحلیل انتخابی را با معامله حفظ می‌کند.</p>
@@ -821,9 +821,9 @@ export default function JournalSessionDetail() {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2"><Badge variant="outline">{optionLabel(trigger.timeframeOptionId, 'بازهٔ زمانی حذف‌شده')}</Badge><Badge variant={trigger.status === 'converted' ? 'default' : 'secondary'}>{trigger.status === 'converted' ? 'متصل به معامله' : trigger.status === 'ignored' ? 'نادیده' : trigger.status === 'invalid' ? 'نامعتبر' : 'در انتظار'}</Badge><span className="text-xs text-muted-foreground">{optionLabel(trigger.triggerTypeOptionId, 'تریگر')}</span></div>
-                  <p className="mt-2 whitespace-pre-wrap text-sm font-medium">{trigger.description || 'بدون شرح'}</p>
-                  {trigger.marketMovement && <p className="mt-1 whitespace-pre-wrap text-xs text-muted-foreground">{trigger.marketMovement}</p>}
-                  {trigger.notes && <p className="mt-1 whitespace-pre-wrap text-xs text-muted-foreground">{trigger.notes}</p>}
+                  <p className="mt-2 break-words whitespace-pre-wrap text-sm font-medium">{trigger.description || 'بدون شرح'}</p>
+                  {trigger.marketMovement && <p className="mt-1 break-words whitespace-pre-wrap text-xs text-muted-foreground">{trigger.marketMovement}</p>}
+                  {trigger.notes && <p className="mt-1 break-words whitespace-pre-wrap text-xs text-muted-foreground">{trigger.notes}</p>}
                   {triggerAnalysisIds(trigger).length > 0 && <div className="mt-2 flex flex-wrap items-center gap-1.5" data-testid={`row-trigger-analyses-${trigger.id}`}>
                     <span className="text-[10px] text-muted-foreground">تحلیل مرتبط:</span>
                     {triggerAnalysisIds(trigger).map(analysisId => {
@@ -920,7 +920,7 @@ export default function JournalSessionDetail() {
     </section>
 
     <section className="space-y-3" aria-labelledby="linked-trades-heading">
-      <div className="flex items-end justify-between gap-3"><div><p className="text-[10px] font-medium tracking-[0.18em] text-primary">EXECUTION LOG</p><h2 id="linked-trades-heading" className="mt-1 text-xl font-semibold">معاملات متصل</h2></div><Badge variant="outline" data-testid="text-linked-trade-count">{bundle.trades.length} معامله</Badge></div>
+      <div className="flex flex-wrap items-end justify-between gap-3"><div className="min-w-0"><p className="text-[10px] font-medium tracking-[0.18em] text-primary">EXECUTION LOG</p><h2 id="linked-trades-heading" className="mt-1 text-xl font-semibold">معاملات متصل</h2></div><Badge variant="outline" className="max-w-full" data-testid="text-linked-trade-count">{bundle.trades.length} معامله</Badge></div>
       {bundle.trades.length === 0 ? <Card className="border-dashed bg-card/50" data-testid="empty-linked-trades"><CardContent className="flex flex-col items-center gap-3 p-8 text-center">
         <Target className="h-7 w-7 text-muted-foreground/70" /><h3 className="font-semibold">هنوز معامله‌ای به این سشن وصل نیست</h3><p className="max-w-md text-sm leading-6 text-muted-foreground">وقتی آمادهٔ اجرا هستید، فرم ثبت معامله را از اینجا باز کنید تا پیوند سشن حفظ شود.</p>
               <Button onClick={scrollToTrigger} className="gap-2" data-testid="button-first-linked-trade"><Plus className="h-4 w-4" />شروع ثبت معامله</Button>
