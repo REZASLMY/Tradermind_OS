@@ -5,7 +5,7 @@ import {
   useCallback,
   type ComponentProps,
 } from "react";
-import { Link, useLocation } from "wouter";
+import { Link, useLocation, useParams } from "wouter";
 import { tradeService } from "../services/tradeService";
 import { analysisService } from "../services/analysisService";
 import { strategyService } from "../services/strategyService";
@@ -417,16 +417,19 @@ function tradeMarket(symbol: string): string {
 }
 
 /** فقط وقتی واقعاً روی صفحهٔ فرم معامله هستیم true می‌دهد (نه هنگام خروج از صفحه). */
-function isOnTradeFormRoute(): boolean {
+function isOnSessionTradeFormRoute(): boolean {
   const path =
     window.location.protocol === "file:"
       ? window.location.hash.replace(/^#/, "").split("?")[0]
       : window.location.pathname;
-  return path.replace(/\/+$/, "").endsWith("/journal/trades/new");
+  return /^\/journal\/sessions\/[^/]+\/trades\/(?:new|[^/]+\/edit)$/.test(
+    path.replace(/\/+$/, ""),
+  );
 }
 
 export default function NewTrade() {
   const [, setLocation] = useLocation();
+  const routeParams = useParams<{ sessionId?: string; tradeId?: string }>();
   // FIX: در hash routing الکترون، query params باید مستقیماً از hash خوانده شوند
   // چون useElectronHashLocation اکنون فقط path را برمی‌گرداند (بدون query string)
   // تا Wouter بتواند route matching درستی انجام دهد
@@ -440,9 +443,9 @@ export default function NewTrade() {
       : window.location.search;
   const searchParams = new URLSearchParams(_searchStr);
   const sessionId = searchParams.get("sessionId");
-  const journalSessionId = searchParams.get("journalSessionId");
+  const journalSessionId = routeParams.sessionId ?? null;
   const journalTriggerId = searchParams.get("journalTriggerId");
-  const editId = searchParams.get("editId");
+  const editId = routeParams.tradeId ?? searchParams.get("editId");
   const returnTo = searchParams.get("returnTo");
   // idFromUrl فقط برای بازیابی پیش‌نویس پس از رفرش صفحه استفاده می‌شود
   // اگر new=true باشد یا editId وجود داشته باشد، از آن صرف‌نظر می‌شود
@@ -564,7 +567,7 @@ export default function NewTrade() {
 
     // اصلاح باگ «معامله تکراری»: هنگام «ذخیره/انصراف» آدرس صفحه عوض می‌شود و یک رندر آخر
     // بدون editId اجرا می‌شود؛ قبلاً همین رندر یک معامله خالی جدید می‌ساخت.
-    if (!isOnTradeFormRoute()) return;
+    if (!isOnSessionTradeFormRoute()) return;
     // اگر قبلاً برای یک معامله مشخص باز شده‌ایم، بدون شناسه هیچ‌وقت معامله جدید نساز.
     if (initialized.current && tradeIdRef.current && !editId && !idFromUrl)
       return;
@@ -595,6 +598,11 @@ export default function NewTrade() {
       if (requestedTradeId) {
         const existing = await tradeService.getTradeById(requestedTradeId);
         if (existing) {
+          if (existing.journalSessionId !== journalSessionId) {
+            toast.error("فقط معاملات همین سشن از این مسیر قابل ویرایش هستند.");
+            setLocation(journalSessionId ? `/journal/sessions/${journalSessionId}` : "/journal/sessions");
+            return;
+          }
           currentTrade = existing;
           isNewDraftRef.current =
             !editId && sessionStorage.getItem(draftMarkerKey) === existing.id;
@@ -612,15 +620,15 @@ export default function NewTrade() {
         }
 
         if (cancelBeforeCreateRef.current) return;
-        // ثبت معامله فقط از داخل «سشن معاملاتی» انجام می‌شود (تریگر → ثبت معامله).
-        if (!journalSessionId && !sessionId) {
+        // ثبت معامله فقط از مسیر یک سشن معاملاتی مجاز است.
+        if (!journalSessionId) {
           toast.info("ثبت معامله از این پس از داخل سشن معاملاتی انجام می‌شود.");
           setLocation("/journal/sessions");
           return;
         }
         currentTrade = await tradeService.createTrade({
           sessionId: sessionId || null,
-          journalSessionId: journalSessionId || null,
+          journalSessionId,
         });
         if (cancelBeforeCreateRef.current) {
           await tradeService.deleteTrade(currentTrade.id);
@@ -1048,7 +1056,7 @@ export default function NewTrade() {
           </Button>
           <div className="min-w-0">
             <h1 className="truncate text-2xl font-bold tracking-tight">
-              {editId ? "Edit Trade" : "Log Trade"}
+              {editId ? "ویرایش معامله سشن" : "ثبت معامله در سشن"}
             </h1>
             {trade.journalSessionId && (
               <p

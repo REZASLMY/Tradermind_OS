@@ -32,6 +32,8 @@ function isDashboard(path: string): boolean {
 
 function parentRoute(path: string): string | null {
   if (/^\/journal\/sessions\/[^/?]+(?:\?.*)?$/.test(path)) return '/journal/sessions';
+  const sessionTradeRoute = path.match(/^\/journal\/sessions\/([^/?]+)\/trades\/(?:new|[^/?]+\/edit)(?:\?.*)?$/);
+  if (sessionTradeRoute) return `/journal/sessions/${sessionTradeRoute[1]}`;
   if (path === '/journal/trades/new') return '/journal/sessions';
   if (/^\/journal\/trades\/[^/]+\/(review|live)$/.test(path)) {
     return path.replace(/\/(review|live)$/, '');

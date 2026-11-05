@@ -7,6 +7,7 @@ import { db } from '../db/database';
 import { BEHAVIOR_FLAG_LABELS, getBehaviorFlags, isWin, isLoss } from '../lib/tradeHelpers';
 import { getTradingDateParts } from '../lib/tradingTime';
 import { computeMetrics, getMetricExtremesBy, getR, mean, rateFromCounts } from '../core/metrics/engine';
+import { getJournalSessionTrades } from '../core/repositories/tradeRepository';
 
 export type InsightSeverity = 'critical' | 'warning' | 'positive' | 'info';
 
@@ -43,7 +44,7 @@ function lossRate(losses: number, total: number) {
 
 export const insightsService = {
   async generateAutoInsights(accountId: string | null = null): Promise<AutoInsight[]> {
-    const loadedTrades = await db.trades.where('status').equals('closed').toArray();
+    const loadedTrades = (await getJournalSessionTrades()).filter(trade => trade.status === 'closed');
     const allTrades = accountId ? loadedTrades.filter(trade => trade.accountId === accountId) : [];
     if (allTrades.length < 3) return [];
 

@@ -89,6 +89,11 @@ function DefaultPin({ pinned, disabled, onToggle, testId }: { pinned: boolean; d
   );
 }
 
+export function navigateToNewSessionDetail(sessionId: string, navigate: (path: string) => void): void {
+  navigate(`/journal/sessions/${encodeURIComponent(sessionId)}`);
+  window.scrollTo(0, 0);
+}
+
 export default function JournalSessions() {
   const [location, setLocation] = useLocation();
   const [sessions, setSessions] = useState<JournalSession[]>([]);
@@ -262,7 +267,7 @@ export default function JournalSessions() {
         preTradePsychologyOptionIds: form.preTradePsychologyOptionIds,
       });
       toast.success('سشن ثبت شد.');
-      setLocation(`/journal/sessions/${session.id}`);
+      navigateToNewSessionDetail(session.id, setLocation);
     } catch (cause) {
       toast.error(cause instanceof Error ? cause.message : 'ثبت سشن انجام نشد.');
     } finally {

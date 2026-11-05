@@ -6,6 +6,7 @@ import { tradeVersionService, tradeEventService } from './tradeEventService';
 import { detectTradingSession } from '../lib/tradeClassification';
 import { isTradingBoxAvailableForAccount } from './tradingBoxService';
 import { computeMetrics } from '../core/metrics/engine';
+import { getJournalSessionTrades } from '../core/repositories/tradeRepository';
 
 const defaultReview = JSON.stringify({ didWell: '', didWrong: '', learned: '', wouldTakeAgain: null, validSetup: null });
 const defaultPostTradeReviewStr = JSON.stringify(defaultPostTradeReview);
@@ -282,7 +283,7 @@ export const tradeService = {
   },
 
   async getStats() {
-    const trades = await db.trades.toArray();
+    const trades = await getJournalSessionTrades();
     const closed = trades.filter(isClosed);
     const m = computeMetrics(closed); // موتور واحد
     return {

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../co
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import { db } from '../db/database';
+import { getJournalSessionTrades } from '../core/repositories/tradeRepository';
 import { useAccountAnalyticsSettings } from '../contexts/AccountAnalyticsContext';
 import { getTradingDateKey } from '../lib/tradingTime';
 import { computeMetrics } from '../core/metrics/engine';
@@ -72,7 +73,7 @@ export default function RiskPlanner() {
       }
     });
     // Pre-trade briefing
-    db.trades.toArray().then(allTrades => {
+    getJournalSessionTrades().then(allTrades => {
       const trades = selectedAccountId
         ? allTrades.filter(trade => trade.accountId === selectedAccountId)
         : [];

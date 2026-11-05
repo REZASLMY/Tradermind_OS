@@ -4,6 +4,7 @@ import { Link } from 'wouter';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { db, type Trade } from '../db/database';
+import { getJournalSessionTrades } from '../core/repositories/tradeRepository';
 import { getNetPnl } from '../lib/tradeHelpers';
 import { getTradingTimeConfig } from '../lib/tradingTime';
 import { useAccountAnalyticsScope } from '../contexts/AccountAnalyticsContext';
@@ -218,7 +219,7 @@ export default function ReportsCenter() {
         journalTriggerEvents,
         journalTradeData,
       ] = await Promise.all([
-        db.trades.toArray(),
+        getJournalSessionTrades(),
         db.dailyJournals.toArray(),
         db.strategies.toArray(),
         db.accounts.toArray(),

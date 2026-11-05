@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { Router } from 'wouter';
 import { memoryLocation } from 'wouter/memory-location';
@@ -52,7 +52,7 @@ vi.mock('../services/journalSessionDefaults', () => ({
   setJournalSessionDefault: vi.fn(),
 }));
 
-import JournalSessions from './JournalSessions';
+import JournalSessions, { navigateToNewSessionDetail } from './JournalSessions';
 
 function renderPage(path = '/journal/sessions') {
   const { hook } = memoryLocation({ path });
@@ -90,7 +90,21 @@ beforeEach(() => {
   serviceMocks.ensureDefaultOptions.mockResolvedValue(undefined);
 });
 
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
 describe('session-first journal list', () => {
+  it('opens a newly created session at the top of the page', () => {
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+    const navigate = vi.fn();
+
+    navigateToNewSessionDetail('session-1', navigate);
+
+    expect(navigate).toHaveBeenCalledWith('/journal/sessions/session-1');
+    expect(scrollTo).toHaveBeenCalledWith(0, 0);
+  });
+
   it('shows the number of trades linked to each session', async () => {
     serviceMocks.getSessions.mockResolvedValue([{
       id: 'session-1',

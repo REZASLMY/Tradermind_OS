@@ -4,7 +4,7 @@ import { Skeleton } from "../components/ui/skeleton";
 import { Trade, DailyJournal, Strategy, AnalysisSession, Phase, Step } from "../db/database";
 import { strategyService } from "../services/strategyService";
 import { analysisService } from "../services/analysisService";
-import { tradeService } from "../services/tradeService";
+import { getJournalSessionTrades } from "../core/repositories/tradeRepository";
 import { journalService } from "../services/journalService";
 import { backupService } from "../services/backupService";
 import { accountService } from "../services/accountService";
@@ -128,7 +128,7 @@ interface DashboardData {
 
 async function loadDashboardData(): Promise<DashboardData> {
   const [trades, sessions, journals, strategies, todayJournal] = await Promise.all([
-    tradeService.getAllTrades(),
+    getJournalSessionTrades(),
     analysisService.getAllSessions(),
     journalService.getAllJournals(),
     strategyService.getAllStrategies(),
@@ -499,13 +499,6 @@ export default function Dashboard() {
               <ActivitySquare className="w-4 h-4" />
               <span className="hidden sm:inline">شروع سشن معاملاتی</span>
               <span className="sm:hidden">سشن جدید</span>
-            </Button>
-          </Link>
-          <Link href="/journal/trades/new">
-            <Button variant="secondary" className="gap-2">
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">ثبت معامله</span>
-              <span className="sm:hidden">معامله</span>
             </Button>
           </Link>
         </div>
@@ -893,7 +886,7 @@ export default function Dashboard() {
               <CardTitle className="text-base flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-primary" /> آخرین معاملات
               </CardTitle>
-              <Link href="/journal/trades" className="text-sm text-primary flex items-center gap-0.5 hover:underline">
+              <Link href="/journal/sessions" className="text-sm text-primary flex items-center gap-0.5 hover:underline">
                 همه <ChevronLeft className="w-4 h-4" />
               </Link>
             </div>
@@ -1325,9 +1318,9 @@ export default function Dashboard() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
             {[
               { icon: ActivitySquare, label: "شروع روز معاملاتی", href: "/journal/sessions" },
-              { icon: Plus,           label: "ثبت معامله",     href: "/journal/trades/new" },
+              { icon: Plus,           label: "ثبت معامله در سشن", href: "/journal/sessions" },
               { icon: PenLine,        label: "ژورنال امروز",   href: "/journal/daily/new" },
-              { icon: TrendingUp,     label: "معاملات",        href: "/journal/trades" },
+              { icon: TrendingUp,     label: "سشن‌های معاملاتی", href: "/journal/sessions" },
               { icon: BarChart3,      label: "گزارش‌ها",       href: "/reports" },
               { icon: FileArchive,    label: "پشتیبان‌گیری",  href: null, onClick: handleQuickBackup, busy: exportingBackup },
             ].map(({ icon: Icon, label, href, onClick, busy }) => (

@@ -12,6 +12,7 @@ import { Badge } from "../components/ui/badge";
 import { tradeEventService, tradeVersionService } from "../services/tradeEventService";
 import { getMissingFieldsForTrade, scoreOneTrade } from "../services/dataQualityService";
 import { TradeEvent } from "../db/database";
+import { getJournalSessionTrades } from "../core/repositories/tradeRepository";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
   DialogFooter, DialogDescription, DialogTrigger,
@@ -105,12 +106,12 @@ export default function TradeDetail() {
 
   const returnTo = getReturnToFromLocation(location) ||
     (trade?.journalSessionId ? `/journal/sessions/${trade.journalSessionId}` : '/journal/sessions');
-  const editPath = `/journal/trades/new?editId=${encodeURIComponent(trade?.id || id || '')}` +
-    `${trade?.journalSessionId ? `&journalSessionId=${encodeURIComponent(trade.journalSessionId)}` : ''}` +
-    `&returnTo=${encodeURIComponent(returnTo)}`;
+  const editPath = trade?.journalSessionId
+    ? `/journal/sessions/${encodeURIComponent(trade.journalSessionId)}/trades/${encodeURIComponent(trade.id)}/edit?returnTo=${encodeURIComponent(returnTo)}`
+    : null;
 
   useEffect(() => { loadTrade(); }, [id]);
-  useEffect(() => { db.trades.toArray().then(setAllTrades); }, []);
+  useEffect(() => { getJournalSessionTrades().then(setAllTrades); }, []);
   useEffect(() => {
     if (!id) return;
     tradeEventService.getEventsForTrade(id).then(setEvents);
@@ -221,10 +222,12 @@ export default function TradeDetail() {
           {missing.filter(f => f.importance === 'high').map(f => (
             <Badge key={f.key} variant="outline" className="border-amber-500/40 text-amber-500 text-[10px] py-0">{f.label}</Badge>
           ))}
-          <Button size="sm" variant="ghost" className="mr-auto h-6 text-xs"
-            onClick={() => setLocation(editPath)}>
-            تکمیل
-          </Button>
+          {editPath && (
+            <Button size="sm" variant="ghost" className="mr-auto h-6 text-xs"
+              onClick={() => setLocation(editPath)}>
+              تکمیل
+            </Button>
+          )}
         </div>
       )}
 
@@ -260,10 +263,12 @@ export default function TradeDetail() {
               {(() => { try { const ptr = JSON.parse(trade.postTradeReview || '{}'); return ptr.completedAt > 0 ? 'مشاهده ریویو' : 'مرور پس از معامله'; } catch { return 'مرور پس از معامله'; } })()}
             </Button>
           )}
-          <Button variant="outline" size="sm" className="gap-2"
-            onClick={() => setLocation(editPath)}>
-            <Pencil className="w-4 h-4" /> ویرایش
-          </Button>
+          {editPath && (
+            <Button variant="outline" size="sm" className="gap-2"
+              onClick={() => setLocation(editPath)}>
+              <Pencil className="w-4 h-4" /> ویرایش
+            </Button>
+          )}
           <Dialog open={isDeleting} onOpenChange={setIsDeleting}>
             <DialogTrigger asChild>
               <Button variant="destructive" size="icon" className="h-9 w-9">

@@ -336,7 +336,7 @@ export default function JournalSessionDetail() {
         notes: triggerDraft.notes,
       });
       if (continueToTrade) {
-        setLocation(`/journal/trades/new?journalSessionId=${encodeURIComponent(sessionId)}&journalTriggerId=${encodeURIComponent(trigger.id)}&returnTo=${encodeURIComponent(`/journal/sessions/${sessionId}`)}`);
+        setLocation(`/journal/sessions/${encodeURIComponent(sessionId)}/trades/new?journalTriggerId=${encodeURIComponent(trigger.id)}&returnTo=${encodeURIComponent(`/journal/sessions/${sessionId}`)}`);
         return;
       }
       setTriggerDraft(current => ({ ...current, description: '', marketMovement: '', notes: '' }));
@@ -840,7 +840,7 @@ export default function JournalSessionDetail() {
                     <SelectTrigger className="h-8 w-32 text-xs" data-testid={`select-trigger-status-${trigger.id}`}><SelectValue /></SelectTrigger>
                     <SelectContent><SelectItem value="pending">در انتظار</SelectItem><SelectItem value="ignored">نادیده</SelectItem><SelectItem value="invalid">نامعتبر</SelectItem></SelectContent>
                   </Select> : <Link href={`/journal/trades/${trigger.linkedTradeId}?returnTo=${encodeURIComponent(`/journal/sessions/${sessionId}`)}`} className="rounded-md border px-3 py-2 text-xs text-primary" data-testid={`link-trigger-trade-${trigger.id}`}>مشاهدهٔ معامله</Link>}
-                  {!trigger.linkedTradeId && <Button type="button" size="sm" variant="outline" disabled={!trigger.confirmed} onClick={() => setLocation(`/journal/trades/new?journalSessionId=${encodeURIComponent(sessionId)}&journalTriggerId=${encodeURIComponent(trigger.id)}&returnTo=${encodeURIComponent(`/journal/sessions/${sessionId}`)}`)} data-testid={`button-start-trigger-trade-${trigger.id}`}>ثبت معامله</Button>}
+                  {!trigger.linkedTradeId && <Button type="button" size="sm" variant="outline" disabled={!trigger.confirmed} onClick={() => setLocation(`/journal/sessions/${encodeURIComponent(sessionId)}/trades/new?journalTriggerId=${encodeURIComponent(trigger.id)}&returnTo=${encodeURIComponent(`/journal/sessions/${sessionId}`)}`)} data-testid={`button-start-trigger-trade-${trigger.id}`}>ثبت معامله</Button>}
                 </div>
               </div>
             )}
